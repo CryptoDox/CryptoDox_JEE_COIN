@@ -6,10 +6,10 @@ class Block{
         this.date_creation = date_creation;
         this.infos = infos;
         this.precedantHash = precedantHash;
-        this.hash = this.blockHash();
+        this.hash = this.hashBlock();
     }
 
-    blockHash(){
+    hashBlock(){
         return SHA256(this.position + this.precedantHash + this.date_creation + JSON.stringify(this.infos)).toString();
     }
 }
@@ -23,22 +23,22 @@ class Blockchain{
         return new Block(0, "01/05/2018", "Cointelegraph:CFTC Chairman On Crypto Regulation: ‘I Don’t See It Being Resolved Anytime Soon’", "0");
     }
 
-    quelDernierBlock(){
+    dernierBlock(){
         return this.chain[this.chain.length -1];
     }
 
-    ajouterBlock(nouveauBlock){
-        nouveauBlock.precedantHash = this.quelDernierBlock().hash;
-        nouveauBlock.hash = nouveauBlock.blockHash();
+    ajoutBlock(nouveauBlock){
+        nouveauBlock.precedantHash = this.dernierBlock().hash;
+        nouveauBlock.hash = nouveauBlock.hashBlock();
         this.chain.push(nouveauBlock);
     }
 
-    inviolableChain(){
+    secureChain(){
         for(let i = 1; i < this.chain.length; i++){
             const ceBlock = this.chain[i];
             const precedantBlock = this.chain[i - 1];
 
-            if(ceBlock.hash !== ceBlock.blockHash()){
+            if(ceBlock.hash !== ceBlock.hashBlock()){
                 return false;
             }
 
@@ -52,14 +52,16 @@ class Blockchain{
 }
 
 let CryptoDox_JEE_COIN = new Blockchain();
-CryptoDox_JEE_COIN.ajouterBlock(new Block(1, "02/05/2018", { montant: 5}));
-CryptoDox_JEE_COIN.ajouterBlock(new Block(2, "03/05/2018", { montant: 12}));
+CryptoDox_JEE_COIN.ajoutBlock(new Block(1, "02/05/2018", { montant: 5}));
+CryptoDox_JEE_COIN.ajoutBlock(new Block(2, "03/05/2018", { montant: 12}));
 
-console.log('Intégrité Blockchain ? ' + CryptoDox_JEE_COIN.inviolableChain());
+console.log(JSON.stringify(CryptoDox_JEE_COIN, null, 4));
+
+console.log('Intégrité Blockchain ? ' + CryptoDox_JEE_COIN.secureChain());
 
 CryptoDox_JEE_COIN.chain[1].infos = { montant: 100};
-CryptoDox_JEE_COIN.chain[1].hash = CryptoDox_JEE_COIN.chain[1].blockHash();
+CryptoDox_JEE_COIN.chain[1].hash = CryptoDox_JEE_COIN.chain[1].hashBlock();
 
-console.log('Intégrité Blockchain ? ' + CryptoDox_JEE_COIN.inviolableChain());
+console.log(JSON.stringify(CryptoDox_JEE_COIN, null, 4));
 
-//console.log(JSON.stringify(CryptoDox_JEE_COIN, null, 4));
+console.log('Intégrité Blockchain ? ' + CryptoDox_JEE_COIN.secureChain());
